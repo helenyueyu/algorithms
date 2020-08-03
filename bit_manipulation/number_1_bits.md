@@ -11,3 +11,5 @@ var hammingWeight = function(n) {
     return count; 
 };
 ```
+
+Time complexity: `O(n)`, where `n` 
