@@ -6,18 +6,23 @@ The naive implementation is to just continually remove the rightmost bit until t
 But notice that we aren't using every piece of information at our disposal. 
 
 ```js
-0    0 1s
-1    1 1
-10    1 1
-11    2 1s
-100    1 1
-101    2 1s
-110    2 1s
-111    3 1s
-1000    1 1
-1001 
-1010
-10
+000     0 
+001     1 
+010     1 
+011     2 
+100     1 
+101     2 
+110     2
+111     3
+
+1000    1
+1001    2
+1010    2
+1011    3
+1100    2
+1101    3
+1110    3
+1111    4
 ```
 
 ## Naive Implementation
