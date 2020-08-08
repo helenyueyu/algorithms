@@ -139,7 +139,7 @@ function initializeGraph(inCounts, adjList, prereqs) {
     for (let i = 0; i < prereqs.length; i++) {
         const [course, prereq] = prereqs[i]; 
         inCounts[course]++; 
-        adjList[prereq].push(course); 
+        adjList[prereq].push(course); // outgoing edges 
     }
 }
 
