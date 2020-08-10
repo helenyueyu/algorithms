@@ -2,20 +2,25 @@
 Go back and resolve. 
 
 ## Implementation
+
 ```js
 var cloneGraph = function(node) {
-    const visited = {};
-    
-    function dfs(node) {
-        if (!node) return node; 
-        if (!visited[node.val]) {
-            visited[node.val] = new Node(node.val); 
-            visited[node.val].neighbors = node.neighbors.map(dfs); 
-        }
-        return visited[node.val]; 
-    }
-    return dfs(node); 
+    const h = {}; 
+    return clone(node, h); 
 };
+
+function clone(node, h) {
+    if (!node) return null; 
+    if (h[node.val] !== undefined) return h[node.val]; 
+    const clonedNode = new Node(node.val);
+
+    h[clonedNode.val] = clonedNode; 
+
+    for (let i = 0; i < node.neighbors.length; i++) {
+        clonedNode.neighbors.push(clone(node.neighbors[i], h)); 
+    }
+    return clonedNode; 
+}
 ```
 
 ```js

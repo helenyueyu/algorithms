@@ -29,4 +29,5 @@ var canFinish = function(numCourses, prereqs) {
     
     return visitedIdx === inCounts.length ? true : false; 
 };
+
 ```
