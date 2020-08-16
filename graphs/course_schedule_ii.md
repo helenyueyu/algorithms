@@ -16,60 +16,58 @@ For a given graph, there can multiple valid **toplogical sorts**.
 
 `O(V + E)`. 
 
-## DFS Approach (Clearer?)
-```js
-let N = 0; 
 
+## BFS Approach (Kahn's algorithm)
+
+General idea: 
+
+* Create an array of incounts. Each element in incounts represents, for element `i`, **the number of incoming edges to that node**. 
+* Set up our adjacency list. For each node, the children of that node is going to represent **all of the nodes** connected to that node **through outgoing edges**. 
+* We set up both the **incounts array** and the **adjacency list** when we initialize the graph. 
+* When we keep removing nodes with 0 incoming edges in this manner, **if this graph has 0 cycles**, then we should eventually remove every single node in our graph. 
+    * If there exists a cycle, then we will **never** be able to remove any node that exists in this cycle. 
+
+    
+```js
 function findOrder(numCourses, prereqs) {
-    const res = new Array(numCourses); 
-    const courses = new Array(numCourses); 
-    for (let i = 0; i < numCourses; i++) {
-        courses[i] = new Course(i); 
-    }
+    const inCounts = new Array(numCourses).fill(0); 
+    const adjList = new Array(numCourses).fill().map(() => []); 
+    initializeGraph(inCounts, adjList, prereqs); 
+    return solveByBFS(inCounts, adjList); 
+}
+
+function initializeGraph(inCounts, adjList, prereqs) {
     for (let i = 0; i < prereqs.length; i++) {
         const [course, prereq] = prereqs[i]; 
-        courses[course].add(prereq); 
+        inCounts[course]++; 
+        adjList[prereq].push(course); // outgoing edges 
     }
-    for (let i = 0; i < numCourses; i++) {
-        if (isCyclic(courses[i], res)) {
-            return []; 
+}
+
+function solveByBFS(inCounts, adjList) {
+    const res = new Array(inCounts.length); 
+    const q = []; 
+    for (let i = 0; i < inCounts.length; i++) {
+        if (inCounts[i] === 0) q.push(i); 
+    } 
+    let visitIdx = 0; 
+    while (q.length > 0) {
+        let prereq = q.shift(); 
+        res[visitIdx] = prereq;  
+        const children = adjList[prereq]; 
+        for (let i = 0; i < children.length; i++) {
+            inCounts[children[i]]--; 
+            if (inCounts[children[i]] === 0) q.push(children[i]); 
         }
+        visitIdx++; 
     }
-    return res; 
+
+    return visitIdx === inCounts.length ? res : []; 
 }
-
-function isCyclic(course, res) {
-    if (course.tested === true) return false; 
-    if (course.visited === true) return true; 
-    course.visited = true; 
-    for (let i = 0; i < course.prereq.length; i++) {
-        if (isCyclic(course.prereq[i], res)) {
-            return true; 
-        }
-    }
-    course.tested = true; 
-    result[N++] = course.i; 
-    return false; 
-}
-
-class Course {
-    constructor(i) {
-        this.i = i; 
-        this.prereq = []; 
-        this.visited = false; 
-        this.tested = false; 
-    }
-
-    add(course) {
-        this.prereq.push(course); 
-    }
-}
-
-
 ```
 
-## DFS Approach (Confusing)
 
+## DFS Approach (Confusing)
 ```js
 function findOrder(numCourses, prereqs) {
     const inCounts = new Array(numCourses).fill(0); 
@@ -121,46 +119,3 @@ function hasOrder(i, adjList, visited, onStack, order) {
 }
 ```
 
-## BFS Approach (Kahn's algorithm)
-
-General idea: 
-    * Create an array of incounts. Each element in incounts represents, for element `i`, **the number of incoming edges to that node**. 
-    * Set up our adjacency list. For each node, the children of that node is going to represent **all of the nodes** connected to that node **through outgoing edges**. 
-    * We set up both the **incounts array** and the **adjacency list** when we initialize the graph. 
-```js
-function findOrder(numCourses, prereqs) {
-    const inCounts = new Array(numCourses).fill(0); 
-    const adjList = new Array(numCourses).fill().map(() => []); 
-    initializeGraph(inCounts, adjList, prereqs); 
-    return solveByBFS(inCounts, adjList); 
-}
-
-function initializeGraph(inCounts, adjList, prereqs) {
-    for (let i = 0; i < prereqs.length; i++) {
-        const [course, prereq] = prereqs[i]; 
-        inCounts[course]++; 
-        adjList[prereq].push(course); // outgoing edges 
-    }
-}
-
-function solveByBFS(inCounts, adjList) {
-    const res = new Array(inCounts.length); 
-    const q = []; 
-    for (let i = 0; i < inCounts.length; i++) {
-        if (inCounts[i] === 0) q.push(i); 
-    } 
-    let visitIdx = 0; 
-    while (q.length > 0) {
-        let prereq = q.shift(); 
-        res[visitIdx] = prereq;  
-        const children = adjList[prereq]; 
-        for (let i = 0; i < children.length; i++) {
-            inCounts[children[i]]--; 
-            if (inCounts[children[i]] === 0) q.push(children[i]); 
-        }
-        visitIdx++; 
-    }
-
-    return visitIdx === inCounts.length ? res : []; 
-}
-```
